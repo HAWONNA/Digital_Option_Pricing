@@ -1,15 +1,15 @@
 """
-Animation Saving Module for Digital Option Pricing
+Digital Call Option Pricing Simulation - Main Module
 
-This module saves the animation of the digital call option pricing simulation as a GIF.
+This is the main module that runs the digital call option pricing simulation.
+It integrates the pricing models, simulation, and visualization components.
 """
 
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend for saving
 import matplotlib.pyplot as plt
 import time
-import os
+import matplotlib
+matplotlib.use('TkAgg')  # Set backend to TkAgg
 
 # Import custom modules
 from pricing_models import bs_digital_call_price, monte_carlo_price, calculate_error
@@ -17,10 +17,7 @@ from simulation import simulate_paths
 from visualization import create_animation
 
 def main():
-    """Main function to create and save animation."""
-    # Create directory for images if it doesn't exist
-    os.makedirs('images', exist_ok=True)
-    
+    """Main function to run the simulation."""
     # Parameter settings
     S0 = 100      # Initial stock price
     K = 105       # Strike price
@@ -59,30 +56,16 @@ def main():
         errors.append(calculate_error(mc_price, bs_price))
         times.append(end_time - start_time)
     
-    # Create animation
+    # Create and display animation
     ani, fig = create_animation(
         all_paths, path_counts, time_points, K, T, r, H, 
         bs_price, mc_prices, errors, times
     )
     
-    # Save each frame as an image
-    for frame in range(len(path_counts)):
-        ani._func(frame)
-        plt.savefig(f'images/frame_{frame:03d}.png', dpi=100)
+    # Display animation
+    plt.show(block=True)
     
-    # Save the animation as a GIF
-    try:
-        # Try to use imagemagick to create a GIF
-        from matplotlib.animation import ImageMagickWriter
-        writer = ImageMagickWriter(fps=1)
-        ani.save('images/simulation_preview.gif', writer=writer)
-        print("Animation saved as GIF using ImageMagick")
-    except Exception as e:
-        print(f"Could not save as GIF: {e}")
-        print("Individual frames were saved in the 'images' directory")
-        print("You can use a tool like GIMP, Photoshop, or online converters to create a GIF from these frames")
-    
-    print("Animation generation completed.")
+    print("Animation completed.")
 
 if __name__ == "__main__":
     main() 

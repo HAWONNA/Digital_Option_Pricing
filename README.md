@@ -12,6 +12,9 @@ This repository contains a Python implementation of a Monte Carlo simulation for
   - [Digital Call Option](#digital-call-option)
   - [Black-Scholes Formula for Digital Options](#black-scholes-formula-for-digital-options)
   - [Monte Carlo Method](#monte-carlo-method)
+- [Project Structure](#project-structure)
+  - [File Organization](#file-organization)
+  - [Module Descriptions](#module-descriptions)
 - [Implementation Details](#implementation-details)
   - [Stock Price Simulation](#stock-price-simulation)
   - [Option Pricing](#option-pricing)
@@ -88,6 +91,63 @@ Under the Black-Scholes model, the asset price follows a geometric Brownian moti
 $$dS = rS \, dt + \sigma S \, dW_t$$
 
 Where $W_t$ is a Wiener process (standard Brownian motion).
+
+## Project Structure
+
+### File Organization
+
+The project is organized into several modules to separate concerns and improve maintainability:
+
+```
+Digital_Option_Pricing/
+├── main.py                  # Main entry point for running the simulation
+├── pricing_models.py        # Black-Scholes and Monte Carlo pricing models
+├── simulation.py            # Stock price path simulation functions
+├── visualization.py         # Visualization and animation functions
+├── save_animation.py        # Script to save animation as GIF
+├── option_simulation.py     # Legacy single-file implementation
+├── Digital_Option_Pricing.py # Interactive Dash application
+├── README.md                # Project documentation
+├── LICENSE                  # MIT License
+├── .gitignore               # Git ignore file
+└── images/                  # Directory for saved images and GIFs
+    └── simulation_preview.gif # Animation of the simulation
+```
+
+### Module Descriptions
+
+1. **pricing_models.py**
+   - Contains implementations of pricing models:
+     - Black-Scholes model for digital call options
+     - Monte Carlo simulation for digital call options
+   - Functions: `bs_digital_call_price()`, `monte_carlo_price()`, `calculate_error()`
+
+2. **simulation.py**
+   - Contains functions for simulating stock price paths using Geometric Brownian Motion
+   - Functions: `simulate_paths()`
+
+3. **visualization.py**
+   - Contains functions for visualizing the simulation results
+   - Creates animated plots showing stock paths, price distributions, convergence, error analysis, and time complexity
+   - Functions: `create_animation()`
+
+4. **main.py**
+   - Main entry point for running the simulation
+   - Integrates the pricing models, simulation, and visualization components
+   - Displays the animation interactively
+
+5. **save_animation.py**
+   - Saves the animation as a GIF file
+   - Creates individual frames in the images directory
+   - Attempts to combine frames into a GIF using ImageMagick
+
+6. **option_simulation.py**
+   - Legacy single-file implementation (kept for reference)
+   - Contains all functionality in a single script
+
+7. **Digital_Option_Pricing.py**
+   - Interactive web application using Dash
+   - Provides a user interface for adjusting simulation parameters
 
 ## Implementation Details
 
@@ -171,16 +231,19 @@ The time complexity graph shows how the computation time scales with the number 
 To run the simulation:
 
 ```bash
-python option_simulation.py
-```
+# Run the interactive simulation
+python main.py
 
-The simulation will display an animated visualization showing how the Monte Carlo price estimate converges to the Black-Scholes price as the number of paths increases.
+# Save the animation as a GIF
+python save_animation.py
+```
 
 ## Requirements
 
 - Python 3.6+
 - NumPy
 - Matplotlib
+- (Optional) ImageMagick for GIF creation
 
 Install the required packages using:
 

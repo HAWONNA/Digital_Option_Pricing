@@ -77,6 +77,16 @@ mc_prices = []
 errors = []
 times = []
 
+# Pre-calculate initial values for each path count to ensure we have data points
+for count in path_counts:
+    start_time = time.time()
+    mc_price = monte_carlo_price(all_paths[:count], K, r, T, H)
+    end_time = time.time()
+    
+    mc_prices.append(mc_price)
+    errors.append(abs(mc_price - bs_price))
+    times.append(end_time - start_time)
+
 # Reserve space for info text
 plt.subplots_adjust(bottom=0.15)
 
@@ -137,6 +147,14 @@ def init():
     ax_time.set_xlabel('Number of Paths')
     ax_time.set_ylabel('Computation Time (s)')
     ax_time.set_title('Time Complexity')
+    
+    # Plot initial data
+    ax_time.plot(path_counts, times, 'b-', marker='o', label='Time')
+    
+    # O(N^0.36) theoretical time complexity
+    theoretical_time = times[0] * (np.array(path_counts) / path_counts[0]) ** 0.36
+    ax_time.plot(path_counts, theoretical_time, 'r--', label='Rate: O(N^0.36)')
+    
     ax_time.legend()
     
     plt.tight_layout()
@@ -153,14 +171,10 @@ def update(frame):
     path_count = path_counts[frame]
     current_paths = all_paths[:path_count]
     
-    # Calculate for current path count
-    start_time = time.time()
-    mc_price = monte_carlo_price(current_paths, K, r, T, H)
-    end_time = time.time()
-    
-    mc_prices.append(mc_price)
-    errors.append(abs(mc_price - bs_price))
-    times.append(end_time - start_time)
+    # Use pre-calculated values
+    mc_price = mc_prices[frame]
+    error = errors[frame]
+    computation_time = times[frame]
     
     # Calculate terminal stock prices
     terminal_prices = current_paths[:, -1]
@@ -216,7 +230,7 @@ def update(frame):
     
     # Display only data up to current frame
     current_path_counts = path_counts[:frame+1]
-    current_mc_prices = mc_prices.copy()  # Price data up to current frame
+    current_mc_prices = mc_prices[:frame+1]  # Price data up to current frame
     
     ax_conv.plot(current_path_counts, current_mc_prices, 'b-', marker='o', label='MC Price')
     ax_conv.axhline(y=bs_price, color='r', linestyle='--', label=f'BS Price = {bs_price:.5f}')
@@ -249,7 +263,7 @@ def update(frame):
     ax_error.set_ylabel('Absolute Error')
     ax_error.set_title('Error vs. Path Count')
     
-    current_errors = errors.copy()  # Error data up to current frame
+    current_errors = errors[:frame+1]  # Error data up to current frame
     ax_error.plot(current_path_counts, current_errors, 'b-', marker='o', label='MC Error')
     
     # O(N^(-0.36)) theoretical convergence rate (observed from image)
@@ -269,8 +283,8 @@ def update(frame):
     ax_time.set_ylabel('Computation Time (s)')
     ax_time.set_title('Time Complexity')
     
-    current_times = times.copy()  # Time data up to current frame
-    ax_time.plot(current_path_counts, current_times, 'g-', marker='o', label='Time')
+    current_times = times[:frame+1]  # Time data up to current frame
+    ax_time.plot(current_path_counts, current_times, 'b-', marker='o', label='Time')
     
     # O(N^0.36) theoretical time complexity (observed from image)
     if frame > 0:
@@ -280,7 +294,7 @@ def update(frame):
     ax_time.legend()
     
     # Update info text
-    info_text.set_text(f"Paths: {path_count}, MC Price: {mc_price:.5f}, BS Price: {bs_price:.5f}, Error: {errors[-1]:.5f}")
+    info_text.set_text(f"Paths: {path_count}, MC Price: {mc_price:.5f}, BS Price: {bs_price:.5f}, Error: {error:.5f}")
     
     plt.tight_layout()
     plt.subplots_adjust(top=0.9, bottom=0.15)
