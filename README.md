@@ -43,10 +43,12 @@ The simulation visualizes how the Monte Carlo price estimate converges to the th
 A digital call option pays a fixed amount (H) if the underlying asset price (S) is above the strike price (K) at maturity (T), and nothing otherwise:
 
 **Payoff at maturity:**
-$$\text{Payoff} = \begin{cases}
-H & \text{if } S_T > K \\
-0 & \text{if } S_T \leq K
-\end{cases}$$
+
+```python
+          ⎧ H   if S_T > K  
+Payoff = ⎨
+          ⎩ 0   if S_T ≤ K
+```
 
 Where:
 - $S_T$ is the asset price at maturity
