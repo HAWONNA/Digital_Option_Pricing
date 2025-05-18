@@ -42,10 +42,10 @@ def main():
     # Path count sequence
     path_counts = [10, 20, 45, 91, 200, 500, 1000, 2000, 3531]
     
-    # Pre-calculate prices, errors, and times for each path count
+    # Pre-calculate prices and errors for each path count
     mc_prices = []
     errors = []
-    times = []
+    times = []  # Keep this for compatibility with visualization function
     
     for count in path_counts:
         start_time = time.time()
@@ -54,7 +54,7 @@ def main():
         
         mc_prices.append(mc_price)
         errors.append(calculate_error(mc_price, bs_price))
-        times.append(end_time - start_time)
+        times.append(end_time - start_time)  # Keep this for compatibility
     
     # Create and display animation
     ani, fig = create_animation(

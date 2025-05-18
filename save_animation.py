@@ -10,11 +10,49 @@ matplotlib.use('Agg')  # Use non-interactive backend for saving
 import matplotlib.pyplot as plt
 import time
 import os
+import sys
+import subprocess
 
 # Import custom modules
 from pricing_models import bs_digital_call_price, monte_carlo_price, calculate_error
 from simulation import simulate_paths
 from visualization import create_animation
+
+def create_gif_from_frames(frame_files, output_file, duration=100):
+    """
+    Create a GIF from a list of image files.
+    
+    Args:
+        frame_files (list): List of image file paths
+        output_file (str): Output GIF file path
+        duration (int): Duration of each frame in milliseconds
+    """
+    try:
+        # Try to install and use Pillow if not already installed
+        try:
+            from PIL import Image
+        except ImportError:
+            print("Installing Pillow...")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
+            from PIL import Image
+        
+        print("Creating GIF using Pillow...")
+        frames = [Image.open(f) for f in frame_files]
+        
+        # Save GIF
+        frames[0].save(
+            output_file,
+            save_all=True,
+            append_images=frames[1:],
+            optimize=False,
+            duration=duration,
+            loop=0
+        )
+        print(f"GIF created successfully: {output_file}")
+        return True
+    except Exception as e:
+        print(f"Error creating GIF: {e}")
+        return False
 
 def main():
     """Main function to create and save animation."""
@@ -45,10 +83,10 @@ def main():
     # Path count sequence
     path_counts = [10, 20, 45, 91, 200, 500, 1000, 2000, 3531]
     
-    # Pre-calculate prices, errors, and times for each path count
+    # Pre-calculate prices and errors for each path count
     mc_prices = []
     errors = []
-    times = []
+    times = []  # Keep this for compatibility with visualization function
     
     for count in path_counts:
         start_time = time.time()
@@ -57,7 +95,7 @@ def main():
         
         mc_prices.append(mc_price)
         errors.append(calculate_error(mc_price, bs_price))
-        times.append(end_time - start_time)
+        times.append(end_time - start_time)  # Keep this for compatibility
     
     # Create animation
     ani, fig = create_animation(
@@ -66,21 +104,20 @@ def main():
     )
     
     # Save each frame as an image
+    frame_files = []
     for frame in range(len(path_counts)):
         ani._func(frame)
-        plt.savefig(f'images/frame_{frame:03d}.png', dpi=100)
+        frame_file = f'images/frame_{frame:03d}.png'
+        plt.savefig(frame_file, dpi=100)
+        frame_files.append(frame_file)
+        print(f"Saved frame {frame+1}/{len(path_counts)}")
     
-    # Save the animation as a GIF
-    try:
-        # Try to use imagemagick to create a GIF
-        from matplotlib.animation import ImageMagickWriter
-        writer = ImageMagickWriter(fps=1)
-        ani.save('images/simulation_preview.gif', writer=writer)
-        print("Animation saved as GIF using ImageMagick")
-    except Exception as e:
-        print(f"Could not save as GIF: {e}")
-        print("Individual frames were saved in the 'images' directory")
-        print("You can use a tool like GIMP, Photoshop, or online converters to create a GIF from these frames")
+    # Create GIF from frames
+    gif_file = 'images/simulation_preview.gif'
+    if create_gif_from_frames(frame_files, gif_file, duration=1000):
+        print(f"Animation saved as {gif_file}")
+    else:
+        print("Could not create GIF. Individual frames were saved in the 'images' directory.")
     
     print("Animation generation completed.")
 

@@ -1,6 +1,6 @@
 # Digital Call Option Pricing Simulation
 
-This repository contains a Python implementation of a Monte Carlo simulation for pricing digital call options, comparing the results with the analytical Black-Scholes solution. The simulation provides dynamic visualizations of stock price paths, terminal price distributions, price convergence, error analysis, and computational complexity.
+This repository contains a Python implementation of a Monte Carlo simulation for pricing digital call options, comparing the results with the analytical Black-Scholes solution. The simulation provides dynamic visualizations of stock price paths, terminal price distributions, price convergence, and error analysis.
 
 <div align="center">
   <img src="./images/simulation_preview.gif" alt="Digital Option Pricing Simulation" width="800">
@@ -22,7 +22,6 @@ This repository contains a Python implementation of a Monte Carlo simulation for
 - [Analysis of Results](#analysis-of-results)
   - [Convergence Properties](#convergence-properties)
   - [Error Analysis](#error-analysis)
-  - [Computational Complexity](#computational-complexity)
 - [Usage](#usage)
 - [Requirements](#requirements)
 - [License](#license)
@@ -35,7 +34,7 @@ This project demonstrates how to price digital call options using:
 1. The analytical Black-Scholes formula
 2. Monte Carlo simulation
 
-The simulation visualizes how the Monte Carlo price estimate converges to the theoretical Black-Scholes price as the number of simulated paths increases, providing insights into the convergence properties, error behavior, and computational complexity of the Monte Carlo method.
+The simulation visualizes how the Monte Carlo price estimate converges to the theoretical Black-Scholes price as the number of simulated paths increases, providing insights into the convergence properties and error behavior of the Monte Carlo method.
 
 ## Mathematical Background
 
@@ -128,7 +127,7 @@ Digital_Option_Pricing/
 
 3. **visualization.py**
    - Contains functions for visualizing the simulation results
-   - Creates animated plots showing stock paths, price distributions, convergence, error analysis, and time complexity
+   - Creates animated plots showing stock paths, price distributions, convergence, and error analysis
    - Functions: `create_animation()`
 
 4. **main.py**
@@ -192,7 +191,7 @@ def bs_digital_call_price(S, K, T, r, sigma):
 
 ### Visualization Components
 
-The simulation includes five main visualization components:
+The simulation includes four main visualization components:
 
 1. **Stock Price Paths**: Shows multiple possible paths the stock price could take until maturity.
 
@@ -201,8 +200,6 @@ The simulation includes five main visualization components:
 3. **Monte Carlo Price Convergence**: Shows how the Monte Carlo price estimate converges to the Black-Scholes theoretical price as the number of paths increases. Includes a 95% confidence interval.
 
 4. **Error vs. Path Count**: Displays the absolute error between the Monte Carlo estimate and the Black-Scholes price as a function of the number of paths, plotted on a log-log scale.
-
-5. **Time Complexity**: Shows the computation time as a function of the number of paths, also on a log-log scale.
 
 ## Analysis of Results
 
@@ -221,10 +218,6 @@ The theoretical error for Monte Carlo methods is given by:
 $$\text{Error} \approx \frac{\sigma_{payoff}}{\sqrt{N}}$$
 
 Where $\sigma_{payoff}$ is the standard deviation of the option payoff.
-
-### Computational Complexity
-
-The time complexity graph shows how the computation time scales with the number of paths. Ideally, the time complexity should be linear ($O(N)$), but in practice, we observe a slightly sublinear relationship of approximately $O(N^{0.36})$. This is likely due to various optimizations in the NumPy implementation and CPU caching effects.
 
 ## Usage
 

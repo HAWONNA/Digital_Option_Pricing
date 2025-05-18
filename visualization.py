@@ -32,15 +32,14 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
     """
     # Initialize figure
     plt.style.use('ggplot')
-    fig = plt.figure(figsize=(15, 10))
-    gs = GridSpec(3, 2, height_ratios=[1, 1, 1], width_ratios=[1, 1])
+    fig = plt.figure(figsize=(15, 15))  # Increased figure height
+    gs = GridSpec(3, 2, height_ratios=[1.5, 1.5, 1], width_ratios=[1, 1])
     
-    # Set up subplots
-    ax_paths = fig.add_subplot(gs[0, 0])  # Stock price paths
-    ax_dist = fig.add_subplot(gs[0, 1])   # Terminal stock price distribution
-    ax_conv = fig.add_subplot(gs[1, :])   # Monte Carlo price convergence
-    ax_error = fig.add_subplot(gs[2, 0])  # Error vs. path count
-    ax_time = fig.add_subplot(gs[2, 1])   # Time complexity
+    # Set up subplots - new layout
+    ax_paths = fig.add_subplot(gs[0, :])  # Stock price paths - full width, top row
+    ax_dist = fig.add_subplot(gs[1, :])   # Terminal stock price distribution - full width, middle row
+    ax_conv = fig.add_subplot(gs[2, 0])   # Monte Carlo price convergence - bottom left
+    ax_error = fig.add_subplot(gs[2, 1])  # Error vs. path count - bottom right
     
     # Set title
     S0 = all_paths[0, 0]  # Initial stock price
@@ -49,10 +48,10 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
     fig.suptitle(f"Digital Call Option Pricing Simulation\nS={S0}, K={K}, T={T}, r={r}, σ={sigma:.2f}, H={H}", fontsize=16)
     
     # Reserve space for info text
-    plt.subplots_adjust(bottom=0.15)
+    plt.subplots_adjust(bottom=0.1)
     
     # Create info text object
-    info_text = fig.text(0.5, 0.05, "", ha="center", fontsize=12, 
+    info_text = fig.text(0.5, 0.03, "", ha="center", fontsize=12, 
                         bbox={"facecolor":"white", "alpha":0.8, "pad":5, "boxstyle":"round"})
     
     # Animation initialization function
@@ -63,9 +62,9 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         ax_paths.set_ylim(60, 160)
         ax_paths.set_xlabel('Time (years)')
         ax_paths.set_ylabel('Stock Price')
-        ax_paths.set_title('Stock Price Paths')
+        ax_paths.set_title('Stock Price Paths', fontsize=14)
         ax_paths.axhline(y=K, color='r', linestyle='--', label=f'Strike K={K}')
-        ax_paths.legend()
+        ax_paths.legend(loc='upper right')
         
         # 2. Initialize terminal stock price distribution
         ax_dist.clear()
@@ -73,9 +72,9 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         ax_dist.set_ylim(0, 250)
         ax_dist.set_xlabel('Stock Price')
         ax_dist.set_ylabel('Frequency')
-        ax_dist.set_title('Terminal Stock Price Distribution')
+        ax_dist.set_title('Terminal Stock Price Distribution', fontsize=14)
         ax_dist.axvline(x=K, color='r', linestyle='--', label=f'Strike K={K}')
-        ax_dist.legend()
+        ax_dist.legend(loc='upper right')
         
         # 3. Initialize Monte Carlo price convergence
         ax_conv.clear()
@@ -84,7 +83,7 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         ax_conv.set_ylim(-0.5, 1.5)
         ax_conv.set_xlabel('Number of Paths')
         ax_conv.set_ylabel('Option Price')
-        ax_conv.set_title('Monte Carlo Price Convergence')
+        ax_conv.set_title('Monte Carlo Price Convergence', fontsize=12)
         ax_conv.axhline(y=bs_price, color='r', linestyle='--', label=f'BS Price = {bs_price:.5f}')
         ax_conv.legend()
         
@@ -96,29 +95,10 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         ax_error.set_ylim(1e-4, 1)
         ax_error.set_xlabel('Number of Paths')
         ax_error.set_ylabel('Absolute Error')
-        ax_error.set_title('Error vs. Path Count')
-        
-        # 5. Initialize time complexity
-        ax_time.clear()
-        ax_time.set_xscale('log')
-        ax_time.set_yscale('log')
-        ax_time.set_xlim(path_counts[0]/2, path_counts[-1]*2)
-        ax_time.set_ylim(1e-6, 1e-1)
-        ax_time.set_xlabel('Number of Paths')
-        ax_time.set_ylabel('Computation Time (s)')
-        ax_time.set_title('Time Complexity')
-        
-        # Plot initial data
-        ax_time.plot(path_counts, times, 'b-', marker='o', label='Time')
-        
-        # O(N^0.36) theoretical time complexity
-        theoretical_time = times[0] * (np.array(path_counts) / path_counts[0]) ** 0.36
-        ax_time.plot(path_counts, theoretical_time, 'r--', label='Rate: O(N^0.36)')
-        
-        ax_time.legend()
+        ax_error.set_title('Error vs. Path Count', fontsize=12)
         
         plt.tight_layout()
-        plt.subplots_adjust(top=0.9, bottom=0.15)
+        plt.subplots_adjust(top=0.9, bottom=0.1)
         
         # Initialize info text
         info_text.set_text("Starting simulation...")
@@ -134,7 +114,6 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         # Use pre-calculated values
         mc_price = mc_prices[frame]
         error = errors[frame]
-        computation_time = times[frame]
         
         # Calculate terminal stock prices
         terminal_prices = current_paths[:, -1]
@@ -146,7 +125,7 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         ax_paths.set_ylim(60, 160)
         ax_paths.set_xlabel('Time (years)')
         ax_paths.set_ylabel('Stock Price')
-        ax_paths.set_title('Stock Price Paths')
+        ax_paths.set_title('Stock Price Paths', fontsize=14)
         
         # Display at most 100 paths
         visible_paths = min(100, path_count)
@@ -154,7 +133,7 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
             ax_paths.plot(time_points, current_paths[i], 'b-', alpha=0.3, linewidth=0.5)
         
         ax_paths.axhline(y=K, color='r', linestyle='--', label=f'Strike K={K}')
-        ax_paths.legend()
+        ax_paths.legend(loc='upper right')
         
         # 2. Update terminal stock price distribution
         ax_dist.clear()
@@ -162,7 +141,7 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         ax_dist.set_ylim(0, 250)
         ax_dist.set_xlabel('Stock Price')
         ax_dist.set_ylabel('Frequency')
-        ax_dist.set_title('Terminal Stock Price Distribution')
+        ax_dist.set_title('Terminal Stock Price Distribution', fontsize=14)
         
         # Out-of-money (red)
         out_of_money_prices = terminal_prices[~in_money]
@@ -177,7 +156,7 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
                        alpha=0.7, label=f'In-the-money: {len(in_money_prices)}')
         
         ax_dist.axvline(x=K, color='r', linestyle='--', label=f'Strike K={K}')
-        ax_dist.legend()
+        ax_dist.legend(loc='upper right')
         
         # 3. Update Monte Carlo price convergence
         ax_conv.clear()
@@ -186,7 +165,7 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         ax_conv.set_ylim(-0.5, 1.5)
         ax_conv.set_xlabel('Number of Paths')
         ax_conv.set_ylabel('Option Price')
-        ax_conv.set_title('Monte Carlo Price Convergence')
+        ax_conv.set_title('Monte Carlo Price Convergence', fontsize=12)
         
         # Display only data up to current frame
         current_path_counts = path_counts[:frame+1]
@@ -221,43 +200,31 @@ def create_animation(all_paths, path_counts, time_points, K, T, r, H, bs_price, 
         ax_error.set_ylim(1e-4, 1)
         ax_error.set_xlabel('Number of Paths')
         ax_error.set_ylabel('Absolute Error')
-        ax_error.set_title('Error vs. Path Count')
+        ax_error.set_title('Error vs. Path Count', fontsize=12)
         
         current_errors = errors[:frame+1]  # Error data up to current frame
         ax_error.plot(current_path_counts, current_errors, 'b-', marker='o', label='MC Error')
         
-        # O(N^(-0.36)) theoretical convergence rate (observed from image)
+        # Calculate and plot theoretical error rate
         if frame > 0:
-            theoretical_rate = current_errors[0] * (np.array(current_path_counts) / current_path_counts[0]) ** (-0.36)
-            ax_error.plot(current_path_counts, theoretical_rate, 'r--', label='Rate: O(N^(-0.36))')
+            # Use linear regression on log-log scale to find the slope
+            log_paths = np.log(current_path_counts)
+            log_errors = np.log(current_errors)
+            slope = np.polyfit(log_paths, log_errors, 1)[0]
+            slope_rounded = round(slope * 100) / 100  # Round to 2 decimal places
+            
+            # Calculate theoretical error rate
+            theoretical_rate = current_errors[0] * (np.array(current_path_counts) / current_path_counts[0]) ** slope_rounded
+            ax_error.plot(current_path_counts, theoretical_rate, 'r--', 
+                        label=f'Rate: O(N^{slope_rounded:.2f})')
         
         ax_error.legend()
-        
-        # 5. Update time complexity
-        ax_time.clear()
-        ax_time.set_xscale('log')
-        ax_time.set_yscale('log')
-        ax_time.set_xlim(path_counts[0]/2, path_counts[-1]*2)
-        ax_time.set_ylim(1e-6, 1e-1)
-        ax_time.set_xlabel('Number of Paths')
-        ax_time.set_ylabel('Computation Time (s)')
-        ax_time.set_title('Time Complexity')
-        
-        current_times = times[:frame+1]  # Time data up to current frame
-        ax_time.plot(current_path_counts, current_times, 'b-', marker='o', label='Time')
-        
-        # O(N^0.36) theoretical time complexity (observed from image)
-        if frame > 0:
-            theoretical_time = current_times[0] * (np.array(current_path_counts) / current_path_counts[0]) ** 0.36
-            ax_time.plot(current_path_counts, theoretical_time, 'r--', label='Rate: O(N^0.36)')
-        
-        ax_time.legend()
         
         # Update info text
         info_text.set_text(f"Paths: {path_count}, MC Price: {mc_price:.5f}, BS Price: {bs_price:.5f}, Error: {error:.5f}")
         
         plt.tight_layout()
-        plt.subplots_adjust(top=0.9, bottom=0.15)
+        plt.subplots_adjust(top=0.9, bottom=0.1)
         
         return []
     
