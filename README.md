@@ -2,7 +2,9 @@
 
 This repository contains a Python implementation of a Monte Carlo simulation for pricing digital call options, comparing the results with the analytical Black-Scholes solution. The simulation provides dynamic visualizations of stock price paths, terminal price distributions, price convergence, error analysis, and computational complexity.
 
-![Digital Option Pricing Simulation](https://raw.githubusercontent.com/HAWONNA/Digital_Option_Pricing/main/images/simulation_preview.gif)
+<div align="center">
+  <img src="./images/simulation_preview.gif" alt="Digital Option Pricing Simulation" width="800">
+</div>
 
 ## Table of Contents
 - [Introduction](#introduction)
